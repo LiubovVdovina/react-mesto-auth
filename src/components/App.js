@@ -122,14 +122,12 @@ function App() {
   function handleRegister(email, password) {
     auth.register(email, password)
       .then((data) => {
-        if(data.data) {
-          setIsSuccess(true);
-          navigate("/sign-in", {replace: true});
-        }
-        else {
-          setIsSuccess(false);
-          console.log('Ошибка!', data.error);
-        }
+        setIsSuccess(true);
+        navigate("/sign-in", {replace: true});
+      })
+      .catch((err) => {
+        setIsSuccess(false);
+        console.log(err)
       })
       .finally(() => {
         setIsTooltipPopupOpen(true);
