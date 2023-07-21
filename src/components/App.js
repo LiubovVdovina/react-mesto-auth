@@ -183,7 +183,7 @@ function App() {
       <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
       <PopupWithForm title='Вы уверены' name='remove' buttonText='Да'>  </PopupWithForm>
       <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
-      <InfoTooltip isSuccess={isSuccess} isOpen={isTooltipPopupOpen} onClose={closeAllPopups} />
+      <InfoTooltip isSuccess={isSuccess} isOpen={isTooltipPopupOpen} text={isSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'} onClose={closeAllPopups} />
   </CurrentUserContext.Provider>
   );
 }

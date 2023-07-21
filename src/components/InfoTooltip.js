@@ -1,7 +1,7 @@
 import successIcon from '../images/tooltip-success.png'
 import errorIcon from '../images/tooltip-error.png'
 
-function InfoTooltip({isSuccess, isOpen, onClose}) {
+function InfoTooltip({isSuccess, isOpen, onClose, text}) {
   return(
     <div className={`popup ${isOpen ? 'popup_opened' : ''}`}>
         <div className="popup__container popup__wrapper">
@@ -11,7 +11,7 @@ function InfoTooltip({isSuccess, isOpen, onClose}) {
             src={isSuccess ? successIcon : errorIcon}
             alt={isSuccess ? 'знак успешно' : 'знак ошибки'}
           />
-          <p className="tooltip__text">{isSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}</p>
+          <p className="tooltip__text">{text}</p>
         </div>
       </div>  
   );
