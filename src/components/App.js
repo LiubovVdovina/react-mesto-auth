@@ -114,8 +114,15 @@ function App() {
       .catch((err) => console.log(err))
   }
 
-  function handleLogin() {
-    setLoggedIn(true);
+  function handleLogin(email, password) {
+    auth.authorize(email, password)
+      .then((data) => {
+        if(data.token) {
+          setLoggedIn(true);
+          navigate('/', {replace: true});
+        }
+      })
+      .catch((err) => console.log(err))
   }
 
   function handleRegister(email, password) {
@@ -172,8 +179,8 @@ function App() {
           onCardLike={handleCardLike} 
           onCardDelete={handleCardDelete} 
           cards={cards} />} />
-        <Route path="/sign-up" element={<Register loggedIn={loggedIn} handleRegister={handleRegister}/>}/>
-        <Route path="/sign-in" element={<Login loggedIn={loggedIn} handleLogin={handleLogin}/>}/>
+        <Route path="/sign-up" element={<Register loggedIn={loggedIn} onRegister={handleRegister}/>}/>
+        <Route path="/sign-in" element={<Login loggedIn={loggedIn} onLogin={handleLogin}/>}/>
         <Route path="/*" element={<Navigate to="/sign-in" />} />
       </Routes>
       <Footer />

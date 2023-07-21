@@ -1,8 +1,7 @@
 import React from 'react'
 import {useNavigate} from 'react-router-dom';
-import * as auth from '../utils/auth'
 
-function Login({loggedIn, handleLogin}) {
+function Login({loggedIn, onLogin}) {
   const [formValue, setFormValue] = React.useState({
     email: '',
     password: ''
@@ -21,18 +20,10 @@ function Login({loggedIn, handleLogin}) {
     
   function handleSubmit(e) {
     e.preventDefault();
-    if(!formValue.email || !formValue.password) {
-      return;
+    onLogin(formValue.email, formValue.password)
+    if (loggedIn) {
+      setFormValue({email: '', password: ''});
     }
-    auth.authorize(formValue.email, formValue.password)
-      .then((data) => {
-        if(data.token) {
-          setFormValue({email: '', password: ''});
-          handleLogin();
-          navigate('/', {replace: true});
-        }
-      })
-      .catch((err) => console.log(err))
   }
 
   React.useEffect(() => {

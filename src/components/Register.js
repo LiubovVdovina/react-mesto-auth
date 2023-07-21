@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
 
-function Register({loggedIn, handleRegister}) {
+function Register({loggedIn, onRegister}) {
   const [formValue, setFormValue] = React.useState({
     email: '',
     password: ''
@@ -23,7 +23,7 @@ function Register({loggedIn, handleRegister}) {
     if(!formValue.email || !formValue.password) {
       return;
     }
-    handleRegister(formValue.email, formValue.password);
+    onRegister(formValue.email, formValue.password);
   }
 
   React.useEffect(() => {
