@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 
 import {api} from '../utils/Api'
 import Header from './Header'
@@ -16,14 +16,20 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext'
 import InfoTooltip from './InfoTooltip';
 import ProtectedRoute from './ProtectedRoute';
 
+import * as auth from '../utils/auth'
+
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isTooltipPopupOpen, setIsTooltipPopupOpen] = React.useState(false);
+  const [isSuccess, setIsSuccess] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({});
-  const [isLoginPage, setIsLoginPage] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState({}); // переменная состояния, хранящая данные текущего пользователя
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState('');
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -108,10 +114,53 @@ function App() {
       })
       .catch((err) => console.log(err))
   }
-  const loggedIn = true;
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function handleRegister(email, password) {
+    auth.register(email, password)
+      .then((data) => {
+        if(data.data) {
+          setIsSuccess(true);
+          navigate("/sign-in", {replace: true});
+        }
+        else {
+          setIsSuccess(false);
+          console.log('Ошибка!', data.error);
+        }
+      })
+      .finally(() => {
+        setIsTooltipPopupOpen(true);
+      })
+  }
+
+  React.useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if(jwt) {
+      auth.checkToken(jwt)
+      .then((data) => {
+        if(data) {
+          setLoggedIn(true);
+          // сохранить e-mail для хэдэра
+          setUserEmail(data.data.email);
+          navigate('/', {replace: true});
+        }
+      })
+    }
+  }, [navigate])
+
+  function handleSignOut() {
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    setUserEmail("");
+    navigate('/sign-in');
+  }
+
   return(
     <CurrentUserContext.Provider value={currentUser}>
-      <Header loggedIn={loggedIn} isLoginPage={isLoginPage}/>
+      <Header userEmail={userEmail} handleSignOut={handleSignOut}/>
       <Routes>
         
       <Route path="/" element=
@@ -125,8 +174,9 @@ function App() {
           onCardLike={handleCardLike} 
           onCardDelete={handleCardDelete} 
           cards={cards} />} />
-        <Route path="/sign-up" element={<Register />}/>
-        <Route path="/sign-in" element={<Login />}/>
+        <Route path="/sign-up" element={<Register loggedIn={loggedIn} handleRegister={handleRegister}/>}/>
+        <Route path="/sign-in" element={<Login loggedIn={loggedIn} handleLogin={handleLogin}/>}/>
+        <Route path="/*" element={<Navigate to="/sign-in" />} />
       </Routes>
       <Footer />
 
@@ -135,7 +185,7 @@ function App() {
       <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
       <PopupWithForm title='Вы уверены' name='remove' buttonText='Да'>  </PopupWithForm>
       <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
-      <InfoTooltip isSuccess={true} isOpen={false} onClose={closeAllPopups} />
+      <InfoTooltip isSuccess={isSuccess} isOpen={isTooltipPopupOpen} onClose={closeAllPopups} />
   </CurrentUserContext.Provider>
   );
 }

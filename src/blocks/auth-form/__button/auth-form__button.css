@@ -9,4 +9,10 @@
   border-radius: 2px;
   min-height: 50px;
   margin-top: 216px;
+  transition: .3s
+}
+
+.auth-form__button:hover {
+  opacity: .6;
+  cursor: pointer;
 }
