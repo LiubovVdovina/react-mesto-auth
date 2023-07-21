@@ -19,6 +19,7 @@ import ProtectedRoute from './ProtectedRoute';
 import * as auth from '../utils/auth'
 
 function App() {
+  const [cards, setCards] = React.useState([]);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
@@ -32,13 +33,14 @@ function App() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    if(loggedIn) {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, initialCards]) => {
         setCurrentUser(userData);
         setCards(initialCards)
       })
-      .catch((err) => console.log(err))
-  }, []);
+      .catch((err) => console.log(err))}
+  }, [loggedIn]);
 
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -63,9 +65,6 @@ function App() {
     setIsTooltipPopupOpen(false);
     setSelectedCard({});
   }
-
-
-  const [cards, setCards] = React.useState([]);
 
   function handleCardLike(card) {
 
@@ -146,6 +145,7 @@ function App() {
           navigate('/', {replace: true});
         }
       })
+      .catch((err) => console.log(err))
     }
   }, [navigate])
 
